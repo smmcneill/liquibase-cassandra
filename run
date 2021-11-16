@@ -1,10 +1,57 @@
 #!/bin/bash
 
-docker run \
-    --rm \
-    -v $(pwd)/changelog.sql:/liquibase/changelog/changelog.sql \
-    -v $(pwd)/liquibase.properties:/liquibase/liquibase.properties \
-    -v $(pwd)/lib:/liquibase/classpath \
-    --network=liquibase-cassandra_default \
-    liquibase/liquibase \
-    liquibase validate
+function migrate:update(){
+    docker run \
+        --rm \
+        -v $(pwd)/changelog.sql:/liquibase/changelog/changelog.sql \
+        -v $(pwd)/liquibase.properties:/liquibase/liquibase.properties \
+        -v $(pwd)/lib:/liquibase/classpath \
+        --network=liquibase-cassandra_default \
+        liquibase/liquibase \
+        liquibase update
+}
+
+# Presuming that cassandra container is up and running, sends you into cqlsh session
+function cql(){
+    docker exec -it cassandra cqlsh
+}
+
+# Start up cassandra and run migrations
+function compose:up(){
+    compose:down
+    docker compose up -d
+}
+
+# Shutdown containers
+function compose:down(){
+    docker compose down
+}
+
+function compose:tail(){
+    docker compose logs -f
+}
+
+# Run tests against local DB
+function test(){
+    cassandra_id="$(docker ps -q -f name=cassandra)"
+    if [ -z "$cassandra_id" ]; then
+        compose:up
+    fi
+
+    while :; do
+        migrate_id="$(docker ps -q -f name=migrate)"        
+        if [ -z "$migrate_id" ]; then
+            go test ./... -count=1
+            break
+        else
+            echo "Warming up"
+            sleep 3
+        fi        
+    done
+
+    if [ -z "$cassandra_id" ]; then
+        compose:down
+    fi
+}
+
+"$@"    
