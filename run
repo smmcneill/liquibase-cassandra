@@ -7,4 +7,4 @@ docker run \
     -v $(pwd)/lib:/liquibase/classpath \
     --network=liquibase-cassandra_default \
     liquibase/liquibase \
-    liquibase history
+    liquibase validate

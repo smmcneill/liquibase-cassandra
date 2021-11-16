@@ -6,7 +6,12 @@ services:
     ports:
       - "9042:9042"
     healthcheck:
-      test: ["CMD", "cqlsh", "-u cassandra", "-p cassandra" ,"-e describe keyspaces"]
+      test: 
+        - "CMD"
+        - "cqlsh"
+        - "-u cassandra"
+        - "-p cassandra" 
+        - "-e describe keyspaces"
       interval: 15s
       timeout: 10s
       retries: 10
@@ -19,11 +24,14 @@ services:
     volumes:
       - ./keyspace.cql:/keyspace.cql
     command:
-      - /bin/bash
-      - -c
-      - "echo loading cassandra keyspace && cqlsh cassandra -f /keyspace.cql && touch /foo && sleep 30"
+      - "/bin/bash"
+      - "-c"
+      - "echo loading cassandra keyspace && cqlsh cassandra -f /keyspace.cql && touch /done && sleep 30"
     healthcheck:
-      test: ["CMD", "ls", "/foo"]
+      test: 
+        - "CMD"
+        - "ls"
+        - "/done"
       interval: 15s
       timeout: 10s
       retries: 10
