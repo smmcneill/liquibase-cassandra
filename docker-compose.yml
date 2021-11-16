@@ -21,7 +21,7 @@ services:
     command:
       - /bin/bash
       - -c
-      - "echo loading cassandra keyspace && cqlsh cassandra -f /keyspace.cql && touch /foo && sleep 120"
+      - "echo loading cassandra keyspace && cqlsh cassandra -f /keyspace.cql && touch /foo && sleep 30"
     healthcheck:
       test: ["CMD", "ls", "/foo"]
       interval: 15s
@@ -37,6 +37,6 @@ services:
       - ./changelog.sql:/liquibase/changelog/changelog.sql
       - ./liquibase.properties:/liquibase/liquibase.properties
       - ./lib:/liquibase/classpath
-    entrypoint:
+    command:
       - liquibase
       - update
