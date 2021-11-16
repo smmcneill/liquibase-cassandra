@@ -41,6 +41,8 @@ function test(){
     while :; do
         migrate_id="$(docker ps -q -f name=migrate)"        
         if [ -z "$migrate_id" ]; then
+
+        # https://manytools.org/hacker-tools/ascii-banner/  (stick letters)
 cat << "EOF"
  __                         __     ___  ___  __  ___  __  
 |__) |  | |\ | |\ | | |\ | / _`     |  |__  /__`  |  /__` 
