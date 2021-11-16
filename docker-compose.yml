@@ -6,10 +6,10 @@ services:
     ports:
       - "9042:9042"
     healthcheck:
-        test: ["CMD", "cqlsh", "-u cassandra", "-p cassandra" ,"-e describe keyspaces"]
-        interval: 15s
-        timeout: 10s
-        retries: 10
+      test: ["CMD", "cqlsh", "-u cassandra", "-p cassandra" ,"-e describe keyspaces"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
   cassandra-load-keyspace:
     container_name: cassandra-load-keyspace
     image: cassandra
@@ -18,23 +18,25 @@ services:
         condition: service_healthy
     volumes:
       - ./keyspace.cql:/keyspace.cql
-    command: /bin/bash -c "echo loading cassandra keyspace && cqlsh cassandra -f /keyspace.cql"
+    command:
+      - /bin/bash
+      - -c
+      - "echo loading cassandra keyspace && cqlsh cassandra -f /keyspace.cql && touch /foo && sleep 120"
+    healthcheck:
+      test: ["CMD", "ls", "/foo"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
   migrate:
-    build: .
-    # image: liquibase/liquibase
+    image: liquibase/liquibase
+    depends_on:
+      cassandra-load-keyspace:
+        condition: service_healthy
     container_name: migrate
-    volumes: 
-      - ./wait-for.sh:/liquibase/wait-for.sh
+    volumes:
       - ./changelog.sql:/liquibase/changelog/changelog.sql
       - ./liquibase.properties:/liquibase/liquibase.properties
-      - ./lib:/liquibase/classpath 
+      - ./lib:/liquibase/classpath
     entrypoint:
-      - "./wait-for.sh"
-      - "cassandra:9042"
-      - "-t 200"
-      - "--"
-      - "sh"
-      - "-c"
-      - "liquibase update"
-    depends_on:
-      - cassandra
+      - liquibase
+      - update
