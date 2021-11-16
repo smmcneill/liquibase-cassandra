@@ -41,6 +41,12 @@ function test(){
     while :; do
         migrate_id="$(docker ps -q -f name=migrate)"        
         if [ -z "$migrate_id" ]; then
+cat << "EOF"
+ __                         __     ___  ___  __  ___  __  
+|__) |  | |\ | |\ | | |\ | / _`     |  |__  /__`  |  /__` 
+|  \ \__/ | \| | \| | | \| \__>     |  |___ .__/  |  .__/ 
+
+EOF
             go test ./... -count=1
             break
         else
