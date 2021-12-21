@@ -17,11 +17,11 @@ func TestMe(t *testing.T) {
 	defer session.Close()
 
 	if err := session.Query(`INSERT INTO person (id, first_name, last_name, city) VALUES (?, ?, ?, ?)`,
-		1, "Shannon", "McNeill", "Hoboken").Exec(); err != nil {
+		2, "Matt", "McNeill", "Boston").Exec(); err != nil {
 		t.Fatal(err)
 	}
 
-	scanner := session.Query(`SELECT first_name, last_name, city FROM person WHERE id = ?`, 1).Iter().Scanner()
+	scanner := session.Query(`SELECT first_name, last_name, city FROM person`).Iter().Scanner()
 	for scanner.Next() {
 		var first, last, city string
 		if err := scanner.Scan(&first, &last, &city); err != nil {

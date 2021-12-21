@@ -16,3 +16,7 @@ CREATE TABLE work_history(
    person_id int,
    business_name text
 );
+
+--changeset your.name:3
+use hello;
+insert into person (id, first_name, last_name, city) values (1, 'Shannon', 'McNeill', 'Hoboken');
