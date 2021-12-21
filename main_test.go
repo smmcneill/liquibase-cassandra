@@ -27,7 +27,7 @@ func TestMe(t *testing.T) {
 		if err := scanner.Scan(&first, &last, &city); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Println("Details:", first, last, city)
+		fmt.Printf("First Name: %s; Last Name: %s; City: %s\n", first, last, city)
 	}
 	// scanner.Err() closes the iterator, so scanner nor iter should be used afterwards.
 	if err := scanner.Err(); err != nil {
